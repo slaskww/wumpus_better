@@ -20,6 +20,7 @@ public class ConsoleCommandParser implements CommandParser<String> {
         add("l", Environment.Action.TURN_LEFT);
         add("r", Environment.Action.TURN_RIGHT);
         add("g", Environment.Action.GRAB);
+        add("s", Environment.Action.SHOOT_ARROW);
         add("exit", Environment.Action.EXIT);
     }
 
