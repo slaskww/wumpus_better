@@ -1,5 +1,4 @@
 import agents.HeuristicAgent;
-import agents.RandomAgent;
 import wumpus.Agent;
 import wumpus.World;
 
@@ -17,6 +16,7 @@ public class Main {
 
             // Start and execute the AI agent
             Agent agent = new HeuristicAgent(world.getWidth(), world.getHeight());
+            ((HeuristicAgent) agent).setDebug(false);
             world.execute(agent);
 
             // Print the board and score table
