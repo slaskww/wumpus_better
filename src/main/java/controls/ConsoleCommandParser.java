@@ -33,7 +33,7 @@ public class ConsoleCommandParser implements CommandParser<String> {
      * @return Action for this command. If command doesn't match any action will return optional with null
      */
     public Optional<Environment.Action> getAction(String command) {
-        return Optional.of(actionMap.get(command));
+        return Optional.ofNullable(actionMap.get(command));
     }
 
 
