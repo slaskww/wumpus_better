@@ -21,4 +21,9 @@ public class ConsoleCommandParserTest {
 
     }
 
+
+    @Test
+    void testNotRegistredCommand(){
+
+    }
 }
