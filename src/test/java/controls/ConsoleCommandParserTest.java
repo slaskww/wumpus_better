@@ -16,7 +16,7 @@ public class ConsoleCommandParserTest {
 
 
     @Test
-    void testMissingCommand(){
+    void testNotRegistredCommand(){
 
     }
 }
