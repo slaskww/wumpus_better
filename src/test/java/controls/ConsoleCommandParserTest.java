@@ -14,4 +14,9 @@ public class ConsoleCommandParserTest {
     void testCommands(){
     }
 
+
+    @Test
+    void testMissingCommand(){
+
+    }
 }
