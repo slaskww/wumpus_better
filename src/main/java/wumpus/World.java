@@ -29,7 +29,6 @@ public class World {
     private boolean randomize = true;
     private HashMap<Integer, Environment.Element> items = new HashMap<Integer, Element>();
 
-    private String agentName;
     private final Player player;
     private final Tile[] tiles;
 
@@ -56,14 +55,6 @@ public class World {
         startPosition = getIndex(0, height - 1);
         // Set the player
         player = new Player(this);
-    }
-
-    /**
-     * Returns the current agent class name.
-     * @return The agent name
-     */
-    public String getAgentName() {
-        return agentName;
     }
 
     /**
