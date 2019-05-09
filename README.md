@@ -60,7 +60,9 @@ To run your custom Agent call it from the `Main` class at some `World` instance.
 Agent agent = new CustomAgent();
 // Create an world and execute the agent
 World world = new World(4, 4);
-world.execute(agent);
+world.reset();
+Runner runner = new Runner(world);
+runner.run(agent);
 // Print the results
 System.out.println(world.renderScore());
 ```

@@ -60,32 +60,6 @@ public class World {
     }
 
     /**
-     * Execute an agent that plays the game automatically.
-     * @param agent The agent instance
-     * @throws InterruptedException
-     */
-    public void execute(Agent agent) throws InterruptedException {
-        agentName = agent.getClass().getName();
-
-        for (Player player : run()) {
-            agent.beforeAction(player);
-            Action actions = agent.getAction(player);
-            player.setAction(actions);
-            agent.afterAction(player);
-        }
-    }
-
-    /**
-     * Starts playing until game reachs its end.
-     * @return The plays iteration
-     * @throws InterruptedException
-     */
-    private Runner run() throws InterruptedException {
-        reset();
-        return new Runner(this);
-    }
-
-    /**
      * Returns the current agent class name.
      * @return The agent name
      */

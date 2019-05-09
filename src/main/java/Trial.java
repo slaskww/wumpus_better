@@ -5,6 +5,7 @@ import java.io.IOException;
 import agents.HeuristicAgent;
 import agents.RandomAgent;
 import wumpus.Agent;
+import wumpus.Runner;
 import wumpus.World;
 
 /**
@@ -21,8 +22,8 @@ public class Trial {
         long executionTime = System.currentTimeMillis();
 
         // Trial for HeuristicAgent
-        new Trial("HeuristicAgent", world, new TrialAgent() {
-            public Agent getAgent() {
+        new Trial("HeuristicAgent", world, new AgentProvider() {
+            public Agent createAgent() {
                 HeuristicAgent agent = new HeuristicAgent(world.getWidth(), world.getWidth());
                 agent.setDebug(false);
                 return agent;
@@ -30,8 +31,8 @@ public class Trial {
         });
 
         // Trial for RandomAgent
-        new Trial("RandomAgent", world, new TrialAgent() {
-            public Agent getAgent() {
+        new Trial("RandomAgent", world, new AgentProvider() {
+            public Agent createAgent() {
                 RandomAgent agent = new RandomAgent();
                 agent.setDebug(false);
                 return agent;
@@ -46,17 +47,17 @@ public class Trial {
     /**
      * Defines the Agent that will be run at the trial.
      */
-    public interface TrialAgent {
-        Agent getAgent();
+    public interface AgentProvider {
+        Agent createAgent();
     }
 
     /**
      * Executes the trial run to some agent and saves a CSV report wit the results.
      * @param name The trial name
      * @param world The world instance
-     * @param trialAgent The agent implementation
+     * @param agentProvider The agent implementation
      */
-    public Trial(String name, World world, TrialAgent trialAgent) {
+    public Trial(String name, World world, AgentProvider agentProvider) {
         // Create reports folder
         File reportsFolder = new File(DEFAULT_REPORT_FOLDER);
         if (!reportsFolder.exists()) reportsFolder.mkdir();
@@ -73,7 +74,10 @@ public class Trial {
             for (int i = 0; i < TRIALS; i++) {
                 // Execute the agent
                 executionTime = System.currentTimeMillis();
-                world.execute(trialAgent.getAgent());
+                world.reset();
+                Runner runner = new Runner(world);
+                runner.run(agentProvider.createAgent());
+
                 executionTime = System.currentTimeMillis() - executionTime;
                 // Get agent score
                 String result = String.format("%s,%d,%d,%d%n", world.getResult(),
