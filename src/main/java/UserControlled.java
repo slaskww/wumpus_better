@@ -52,7 +52,7 @@ public class UserControlled {
         System.out.println("Board:");
         System.out.println(world.renderAll());
 
-        System.out.format("Results for %s:%n", world.getAgentName());
+        System.out.format("Results for %s:%n", agent.getClass().getName());
         System.out.println(world.renderScore());
     }
 }
