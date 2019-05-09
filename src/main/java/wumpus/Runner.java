@@ -9,7 +9,7 @@ import wumpus.Environment.Result;
 /**
  * The iteration of plays that the player can take until reaches its end.
  */
-public class Runner implements Iterable<Player>, Iterator<Player> {
+public class Runner {
     private final World world;
     private int iterations = 0;
     private int maxIterations;
@@ -24,37 +24,30 @@ public class Runner implements Iterable<Player>, Iterator<Player> {
     }
 
     /**
-     * Returns the iterator that can be user in a loop.
-     * @return Itself
+     * Execute an agent that plays the game automatically.
+     * @param agent The agent instance
+     * @throws InterruptedException
      */
-    public Iterator<Player> iterator() {
-        return this;
+    public void run(Agent agent) throws InterruptedException {
+        Player player = world.getPlayer();
+
+        while (canMove()) {
+            agent.beforeAction(player);
+            Action actions = agent.getAction(player);
+            player.setAction(actions);
+            agent.afterAction(player);
+            iterations++;
+        }
     }
 
     /**
      * Check if the game has ended.
      * @return
      */
-    public boolean hasNext() {
+    public boolean canMove() {
         Player player = world.getPlayer();
         return iterations < maxIterations && world.getResult() != Result.WIN &&
                 player.isAlive() && player.getLastAction() != Action.EXIT;
     }
 
-    /**
-     * Get player instance to calculate the next iteration.
-     * @return The current player instance
-     */
-    public Player next() {
-        if (!hasNext()) throw new NoSuchElementException();
-        iterations++;
-        return world.getPlayer();
-    }
-
-    /**
-     * Operation not supported, throws an error.
-     */
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
 }

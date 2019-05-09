@@ -1,10 +1,7 @@
 import agents.HeuristicAgent;
 import controls.CommandParser;
 import controls.ConsoleCommandParser;
-import wumpus.Agent;
-import wumpus.Environment;
-import wumpus.Player;
-import wumpus.World;
+import wumpus.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,7 +44,9 @@ public class UserControlled {
             }
         };
 
-        world.execute(agent);
+        world.reset();
+        Runner runner = new Runner(world);
+        runner.run(agent);
 
         // Print the board and score table
         System.out.println("Board:");

@@ -1,11 +1,10 @@
 package wumpus;
 
-import java.util.HashMap;
-import java.util.Random;
-
-import wumpus.Environment.Action;
 import wumpus.Environment.Element;
 import wumpus.Environment.Perception;
+
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * The World is a representation of the game board, it handles the position of the peers and the
@@ -57,32 +56,6 @@ public class World {
         startPosition = getIndex(0, height - 1);
         // Set the player
         player = new Player(this);
-    }
-
-    /**
-     * Execute an agent that plays the game automatically.
-     * @param agent The agent instance
-     * @throws InterruptedException
-     */
-    public void execute(Agent agent) throws InterruptedException {
-        agentName = agent.getClass().getName();
-
-        for (Player player : run()) {
-            agent.beforeAction(player);
-            Action actions = agent.getAction(player);
-            player.setAction(actions);
-            agent.afterAction(player);
-        }
-    }
-
-    /**
-     * Starts playing until game reachs its end.
-     * @return The plays iteration
-     * @throws InterruptedException
-     */
-    private Runner run() throws InterruptedException {
-        reset();
-        return new Runner(this);
     }
 
     /**
@@ -256,14 +229,16 @@ public class World {
 
 
     /**
-     * Returns if the player have win or loose the game.
+     * Returns if the player have win, loose or still playing the game.
      * @return The outcome of the game
      */
     public Environment.Result getResult() {
         if (player.isAlive() && player.hasGold() && player.getTile().getIndex() == startPosition) {
             return Environment.Result.WIN;
+        } else if (player.isDead()) {
+            return Environment.Result.LOOSE;
         }
-        return Environment.Result.LOOSE;
+        return Environment.Result.IN_GAME;
     }
 
     /**

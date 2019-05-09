@@ -1,5 +1,6 @@
 import agents.HeuristicAgent;
 import wumpus.Agent;
+import wumpus.Runner;
 import wumpus.World;
 
 /**
@@ -14,10 +15,11 @@ public class Main {
             // Print the game title
             System.out.println("Hunt the Wumpus!");
 
-            // Start and execute the AI agent
+            // Start and run the AI agent
             Agent agent = new HeuristicAgent(world.getWidth(), world.getHeight());
-            ((HeuristicAgent) agent).setDebug(false);
-            world.execute(agent);
+            world.reset();
+            Runner runner = new Runner(world);
+            runner.run(agent);
 
             // Print the board and score table
             System.out.println("Board:");

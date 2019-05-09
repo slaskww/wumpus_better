@@ -31,7 +31,7 @@ public class Environment {
      * The final outcome of the game.
      */
     public enum Result {
-        WIN, LOOSE
+        WIN, LOOSE, IN_GAME
     }
 
     /**
