@@ -11,7 +11,6 @@ import java.util.Random;
  * render of it.
  */
 public class World {
-    private static final int DEFAULT_MAX_STEPS = 200;
     private static final int RANDOM_MAX_TRIES = 20;
     private static final int DEFAULT_GOLD = 1;
     private static final int DEFAULT_WUMPUS = 1;
@@ -24,7 +23,6 @@ public class World {
     private int gold = DEFAULT_GOLD;
     private int pits = DEFAULT_PITS;
     private int wumpus = DEFAULT_WUMPUS;
-    private int maxSteps = DEFAULT_MAX_STEPS;
 
     private boolean randomize = true;
     private HashMap<Integer, Environment.Element> items = new HashMap<Integer, Element>();
@@ -55,22 +53,6 @@ public class World {
         startPosition = getIndex(0, height - 1);
         // Set the player
         player = new Player(this);
-    }
-
-    /**
-     * Returns the maximum steps the player can make before ending the game.
-     * @return The max steps allowed
-     */
-    public int getMaxSteps() {
-        return maxSteps;
-    }
-
-    /**
-     * Sets the maximus steps to finish the game.
-     * @param value
-     */
-    public void setMaxSteps(int value) {
-        maxSteps = value;
     }
 
     /**

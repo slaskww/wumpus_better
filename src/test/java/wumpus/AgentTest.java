@@ -10,13 +10,13 @@ import static org.mockito.Mockito.when;
 
 public class AgentTest {
 
-    int maximumSteps = 10;
+    private int maximumSteps = 10;
 
-    Agent agentMock;
+    private Agent agentMock;
 
-    World worldMock;
+    private World worldMock;
 
-    Player playerMock;
+    private Player playerMock;
 
     @BeforeEach
     public void setUp(){
@@ -29,14 +29,13 @@ public class AgentTest {
         when(playerMock.getLastAction()).thenReturn(Environment.Action.GO_FORWARD);
 
         worldMock = Mockito.mock(World.class);
-        when(worldMock.getMaxSteps()).thenReturn(maximumSteps);
         when(worldMock.getPlayer()).thenReturn(playerMock);
         when(worldMock.getResult()).thenReturn(Environment.Result.IN_GAME);
     }
 
     @Test
     public void testNumberOfMethodCalls() throws InterruptedException {
-        Runner runner = new Runner(worldMock);
+        Runner runner = new Runner(worldMock, maximumSteps);
         runner.run(agentMock);
 
         Mockito.verify(agentMock, times(maximumSteps)).getAction(any());

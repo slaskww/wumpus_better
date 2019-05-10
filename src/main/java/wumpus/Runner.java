@@ -10,6 +10,8 @@ import wumpus.Environment.Result;
  * The iteration of plays that the player can take until reaches its end.
  */
 public class Runner {
+    private static final int DEFAULT_MAX_STEPS = 200;
+
     private final World world;
     private int iterations = 0;
     private int maxIterations;
@@ -19,8 +21,17 @@ public class Runner {
      * @param world The world instance.
      */
     public Runner(World world) {
+        this(world, DEFAULT_MAX_STEPS);
+    }
+
+    /**
+     * The runner constructor.
+     * @param world The world instance.
+     * @param maxIterations maximum number of moves in game.
+     */
+    public Runner(World world, int maxIterations) {
         this.world = world;
-        this.maxIterations = world.getMaxSteps();
+        this.maxIterations = maxIterations;
     }
 
     /**
