@@ -44,6 +44,8 @@ buildNumber.properties
 .idea/gradle.xml
 .idea/libraries
 
+*.iml
+
 # Mongo Explorer plugin:
 .idea/mongoSettings.xml
 
