@@ -1,12 +1,13 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import agents.HeuristicAgent;
 import agents.RandomAgent;
 import wumpus.Agent;
+import wumpus.Player;
 import wumpus.Runner;
 import wumpus.World;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Executes trials run for the agents and safe the output to and CSV file.
@@ -15,16 +16,19 @@ public class Trial {
     private static final String DEFAULT_REPORT_FOLDER = "./target/trial-reports";
     private static final int TRIALS = 10000;
 
+    private static int width = 4;
+    private static int height = 4;
+
     public static void main(String[] args) throws Exception {
         // Create a 4x4 world
-        final World world = new World(4, 4);
+        final World.WorldBuilder world = new World.WorldBuilder().size(width, height);
 
         long executionTime = System.currentTimeMillis();
 
         // Trial for HeuristicAgent
         new Trial("HeuristicAgent", world, new AgentProvider() {
             public Agent createAgent() {
-                HeuristicAgent agent = new HeuristicAgent(world.getWidth(), world.getWidth());
+                HeuristicAgent agent = new HeuristicAgent(width, height);
                 agent.setDebug(false);
                 return agent;
             }
@@ -54,10 +58,10 @@ public class Trial {
     /**
      * Executes the trial run to some agent and saves a CSV report wit the results.
      * @param name The trial name
-     * @param world The world instance
+     * @param worldBuilder The world instance
      * @param agentProvider The agent implementation
      */
-    public Trial(String name, World world, AgentProvider agentProvider) {
+    public Trial(String name, World.WorldBuilder worldBuilder, AgentProvider agentProvider) {
         // Create reports folder
         File reportsFolder = new File(DEFAULT_REPORT_FOLDER);
         if (!reportsFolder.exists()) reportsFolder.mkdir();
@@ -74,14 +78,19 @@ public class Trial {
             for (int i = 0; i < TRIALS; i++) {
                 // Execute the agent
                 executionTime = System.currentTimeMillis();
-                world.initialize();
+                World world = worldBuilder.build();
                 Runner runner = new Runner(world);
-                runner.run(agentProvider.createAgent());
+
+                Player player = new Player(world);
+                player.setTile(world.getStartPosition());
+                player.initialize();
+
+                runner.run(agentProvider.createAgent(), player);
 
                 executionTime = System.currentTimeMillis() - executionTime;
                 // Get agent score
-                String result = String.format("%s,%d,%d,%d%n", world.getResult(),
-                        world.getPlayer().getScore(), world.getPlayer().getActions().size(),
+                String result = String.format("%s,%d,%d,%d%n", player.getResult(),
+                        player.getScore(), player.getActions().size(),
                         executionTime);
                 writer.append(result);
             }

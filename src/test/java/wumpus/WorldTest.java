@@ -9,21 +9,26 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static wumpus.Environment.Action.*;
-import static wumpus.Environment.Perception.GLITTER;
 
 public class WorldTest {
 
     @Test
     public void testSuccessPath() throws InterruptedException {
 
-        World worldStub = new World(4, 4);
         // autor kodu zrobił metodę nieintuicyjnie odwrotnie niż układ znany z metematyki
         // jeśli chcemy ustwiać złoto w prawym dolnym rogu musimy ustawić x na 3
         // i y na 3 (y jest liczony od góry układu, nie od dołu)
-        worldStub.setGold(3,3);
-        worldStub.initialize();
 
-        System.out.println(ConsoleRenderer.renderAll(worldStub)); // kod niepotrzebny w teście, służy tylko dla naszej pewności
+        World worldStub = new World.WorldBuilder()
+                .size(4, 4)
+                .setGold(3,3)
+                .build();
+
+        Player player = new Player(worldStub);
+        player.setTile(worldStub.getStartPosition());
+        player.initialize();
+
+        System.out.println(ConsoleRenderer.renderAll(worldStub, player)); // kod niepotrzebny w teście, służy tylko dla naszej pewności
 
         Runner runner = new Runner(worldStub);
 
@@ -44,15 +49,15 @@ public class WorldTest {
             @Override
             public void afterAction(Player player) {
                 System.out.println("----------------------"); // kod niepotrzebny w teście, służy tylko do podejrzenia przebiegu testu
-                System.out.println(ConsoleRenderer.renderAll(worldStub)); // kod niepotrzebny w teście, służy tylko do podejrzenia przebiegu testu
+                System.out.println(ConsoleRenderer.renderAll(worldStub, player)); // kod niepotrzebny w teście, służy tylko do podejrzenia przebiegu testu
             }
         };
 
-        runner.run(agent);
+        runner.run(agent, player);
 
-        assertThat(worldStub.getResult()).isEqualTo(Environment.Result.WIN);
-        assertThat(worldStub.getPlayer().isAlive()).isEqualTo(true);
-        assertThat(worldStub.getPlayer().hasGold()).isEqualTo(true);
+        assertThat(player.getResult()).isEqualTo(Environment.Result.WIN);
+        assertThat(player.isAlive()).isEqualTo(true);
+        assertThat(player.hasGold()).isEqualTo(true);
 
     }
 }

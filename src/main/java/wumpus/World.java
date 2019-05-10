@@ -1,7 +1,5 @@
 package wumpus;
 
-import wumpus.Environment.Element;
-
 import java.util.HashMap;
 import java.util.Random;
 
@@ -10,154 +8,17 @@ import java.util.Random;
  * render of it.
  */
 public class World {
-    private static final int RANDOM_MAX_TRIES = 20;
-    private static final int DEFAULT_GOLD = 1;
-    private static final int DEFAULT_WUMPUS = 1;
-    private static final int DEFAULT_PITS = 2;
 
-    private final int width;
-    private final int height;
     private final int startPosition;
+    private Tile[] tiles;
+    private int width;
+    private int height;
 
-    private int gold = DEFAULT_GOLD;
-    private int pits = DEFAULT_PITS;
-    private int wumpus = DEFAULT_WUMPUS;
-
-    private boolean randomize = true;
-    private HashMap<Integer, Environment.Element> items = new HashMap<Integer, Element>();
-
-    private final Player player;
-    private final Tile[] tiles;
-
-    /**
-     * Creates a new world with given dimensions.
-     * @param width The horizontal constraint of the board
-     * @param height The vertical constraint of the board
-     * @throws InterruptedException
-     * @throws InternalError
-     */
-    public World(int width, int height) throws InterruptedException,
-            InternalError {
-        if (width == 1 && height == 1) {
-            throw new InternalError("The world size must be greater than 1x1.");
-        }
+    World(Tile[] tiles, int width, int height, int startPosition) {
+        this.tiles = tiles;
         this.width = width;
         this.height = height;
-        // Generate the board matrix (WxH)
-        tiles = new Tile[width * height];
-        for (int i = 0; i < width * height; i++) {
-            tiles[i] = new Tile(i, width, height);
-        }
-        // Saves the start position to check the objective
-        startPosition = getIndex(0, height - 1);
-        // Set the player
-        player = new Player(this);
-    }
-
-    /**
-     * Set the number of pits on the board.
-     * @param value
-     */
-    public void setPits(int value) {
-        pits = value;
-    }
-
-    /**
-     * Sets a pit at given coordinate.
-     * @param x The horizontal coordinate
-     * @param y The vertical coordinate
-     */
-    public void setPit(int x, int y) {
-        setItem(Element.PIT, x, y);
-    }
-
-    /**
-     * Set the number of Wumpus on the board.
-     * @param value
-     */
-    public void setWumpus(int value) {
-        wumpus = value;
-    }
-
-    /**
-     * Sets a Wumpus at given coordinate.
-     * @param x The horizontal position
-     * @param y The vertical position
-     */
-    public void setWumpus(int x, int y) {
-        setItem(Element.WUMPUS, x, y);
-    }
-
-    /**
-     * Sets the Gold at given coordinate.
-     * @param x The horizontal position
-     * @param y The vertical position
-     */
-    public void setGold(int x, int y) {
-        setItem(Element.GOLD, x, y);
-    }
-
-    /**
-     * Sets the element at given coordinates and saves it for later retrieval.
-     *
-     * @param element The element to plate
-     * @param x       The horizontal position
-     * @param y       The vertical position
-     */
-    private void setItem(Element element, int x, int y) {
-        int idx = getIndex(x, y); //get index of position in array
-        if (items.containsKey(idx)) { //check if it not used already
-            throw new InternalError("Tile is not empty!");
-        }
-        // Saves the items position for later retrieval
-        items.put(idx, element);
-        // Turn off randomization
-        randomize = false;
-    }
-
-    /**
-     * Sets a random position for the a set of items respecting safe blocks.
-     * @param element The element to be place
-     * @param times How many items to be placed.
-     * @throws InterruptedException When reaches too many tries
-     */
-    private void setRandom(Environment.Element element, int times) throws InterruptedException {
-        Random random = new Random();
-        int tries = 0;
-        // Set the starting point neighbors as safe
-        int[] safeBlocks = player.getTile().getNeighbors();
-
-        for(int i = 0; i < times; i++) {
-            Tile position;
-            // Find an empty block to set the element
-            while (true) {
-                int z = random.nextInt(width * height - 1);
-                position = tiles[z];
-                if(position.isEmpty() &&
-                        z != safeBlocks[0] && z != safeBlocks[1]  && z != safeBlocks[2]  &&
-                        z != safeBlocks[3]) {
-                    position.setItem(element);
-                    break;
-                }
-                // Do not loop forever
-                if (tries >= RANDOM_MAX_TRIES) {
-                    throw new InterruptedException("Cannot set a random position for element after " +
-                            "many tries, increase the world dimensions.");
-                } else {
-                    tries++;
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the index from a given 2D position.
-     * @param x The horizontal position
-     * @param y The vertical position
-     * @return The index
-     */
-    public int getIndex(int x, int y) {
-        return (x + y * width);
+        this.startPosition = startPosition;
     }
 
     /**
@@ -167,6 +28,16 @@ public class World {
      */
     public Tile getPosition(int index) {
         return tiles[index];
+    }
+
+    /**
+     * Returns the index from a given 2D position.
+     * @param x The horizontal position
+     * @param y The vertical position
+     * @return The index
+     */
+    private int getIndex(int x, int y) {
+        return (x + y * width);
     }
 
     /**
@@ -181,12 +52,6 @@ public class World {
     }
 
     /**
-     * Returns the current player.
-     * @return The player instance
-     */
-    public Player getPlayer() { return player; }
-
-    /**
      * Returns the board width.
      * @return The width
      */
@@ -198,44 +63,198 @@ public class World {
      */
     public int getHeight() { return height; }
 
-
-    /**
-     * Returns if the player have win, loose or still playing the game.
-     * @return The outcome of the game
-     */
-    public Environment.Result getResult() {
-        if (player.isAlive() && player.hasGold() && player.getTile().getIndex() == startPosition) {
-            return Environment.Result.WIN;
-        } else if (player.isDead()) {
-            return Environment.Result.LOOSE;
-        }
-        return Environment.Result.IN_GAME;
+    public int getStartPosition() {
+        return startPosition;
     }
 
-    /**
-     * Resets the board.
-     * @throws InterruptedException
-     */
-    public void initialize() throws InterruptedException {
-        // Reset all blocks
-        for (int i = 0; i < tiles.length; i++) {
-            tiles[i].clear();
+    public static class WorldBuilder {
+        private static final int RANDOM_MAX_TRIES = 20;
+        private static final int DEFAULT_GOLD = 1;
+        private static final int DEFAULT_WUMPUS = 1;
+        private static final int DEFAULT_PITS = 2;
+
+        private int width;
+        private int height;
+        private int startPosition;
+
+        private int gold = DEFAULT_GOLD;
+        private int pits = DEFAULT_PITS;
+        private int wumpus = DEFAULT_WUMPUS;
+
+        private boolean randomize = true;
+        private HashMap<Integer, Environment.Element> items = new HashMap<Integer, Environment.Element>();
+
+        public WorldBuilder() {
         }
-        // Reset the player agent
-        player.setTile(startPosition);
-        player.reset();
-        // Set the dangers
-        if (randomize) {
-            setRandom(Element.WUMPUS, wumpus);
-            setRandom(Environment.Element.PIT, pits);
-            // Set the objective
-            setRandom(Element.GOLD, gold);
-        } else {
-            for (int index : items.keySet()) {
-                Tile tile = getPosition(index);
-                tile.setItem(items.get(index));
+
+        /**
+         * Set a new world dimensions.
+         * @param width The horizontal constraint of the board
+         * @param height The vertical constraint of the board
+         * @throws InterruptedException
+         * @throws InternalError
+         */
+        public WorldBuilder size(int width, int height) throws InterruptedException {
+            if (width == 1 && height == 1) {
+                throw new InternalError("The world WorldBuilder must be greater than 1x1.");
+            }
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+        /**
+         * Set the number of pits on the board.
+         * @param value
+         */
+        public WorldBuilder setPits(int value) {
+            pits = value;
+            return this;
+        }
+
+        /**
+         * Sets a pit at given coordinate.
+         * @param x The horizontal coordinate
+         * @param y The vertical coordinate
+         */
+        public WorldBuilder setPit(int x, int y) {
+            setItem(Environment.Element.PIT, x, y);
+            return this;
+        }
+
+        /**
+         * Set the number of Wumpus on the board.
+         * @param value
+         */
+        public WorldBuilder setWumpus(int value) {
+            wumpus = value;
+            return this;
+        }
+
+        /**
+         * Sets a Wumpus at given coordinate.
+         * @param x The horizontal position
+         * @param y The vertical position
+         */
+        public WorldBuilder setWumpus(int x, int y) {
+            setItem(Environment.Element.WUMPUS, x, y);
+            return this;
+        }
+
+        /**
+         * Sets the Gold at given coordinate.
+         * @param x The horizontal position
+         * @param y The vertical position
+         */
+        public WorldBuilder setGold(int x, int y) {
+            setItem(Environment.Element.GOLD, x, y);
+            return this;
+        }
+
+        /**
+         * Sets the element at given coordinates and saves it for later retrieval.
+         *
+         * @param element The element to plate
+         * @param x       The horizontal position
+         * @param y       The vertical position
+         */
+        private void setItem(Environment.Element element, int x, int y) {
+            int idx = getIndex(x, y); //get index of position in array
+            if (items.containsKey(idx)) { //check if it not used already
+                throw new InternalError("Tile is not empty!");
+            }
+            // Saves the items position for later retrieval
+            items.put(idx, element);
+            // Turn off randomization
+            randomize = false;
+        }
+
+        /**
+         * Sets a random position for the a set of items respecting safe blocks.
+         *
+         * @param tiles
+         * @param startTile
+         * @param element The element to be place
+         * @param times How many items to be placed.
+         * @throws InterruptedException When reaches too many tries
+         */
+        private void setRandom(Tile[] tiles, Tile startTile, Environment.Element element, int times) throws InterruptedException {
+            Random random = new Random();
+            int tries = 0;
+            // Set the starting point neighbors as safe
+            int[] safeBlocks = startTile.getNeighbors();
+
+            for(int i = 0; i < times; i++) {
+                Tile position;
+                // Find an empty block to set the element
+                while (true) {
+                    int z = random.nextInt(width * height - 1);
+                    position = tiles[z];
+                    if(position.isEmpty() &&
+                            z != safeBlocks[0] && z != safeBlocks[1]  && z != safeBlocks[2]  &&
+                            z != safeBlocks[3]) {
+                        position.setItem(element);
+                        break;
+                    }
+                    // Do not loop forever
+                    if (tries >= RANDOM_MAX_TRIES) {
+                        throw new InterruptedException("Cannot set a random position for element after " +
+                                "many tries, increase the world dimensions.");
+                    } else {
+                        tries++;
+                    }
+                }
             }
         }
-    }
 
+        /**
+         * Returns the index from a given 2D position.
+         * @param x The horizontal position
+         * @param y The vertical position
+         * @return The index
+         */
+        private int getIndex(int x, int y) {
+            return (x + y * width);
+        }
+
+        /**
+         * Resets the board.
+         * @throws InterruptedException
+         */
+        public World build() throws InterruptedException {
+
+            // Generate the board matrix (WxH)
+            Tile[] tiles = new Tile[width * height];
+            for (int i = 0; i < width * height; i++) {
+                tiles[i] = new Tile(i, width, height);
+            }
+            // Saves the start position to check the objective
+            startPosition = getIndex(0, height - 1);
+
+            Tile startTile = tiles[startPosition];
+            // Set the player
+
+            // Reset all blocks
+            for (int i = 0; i < tiles.length; i++) {
+                tiles[i].clear();
+            }
+
+            // Set the dangers
+            if (randomize) {
+                setRandom(tiles, startTile, Environment.Element.WUMPUS, wumpus);
+                setRandom(tiles, startTile, Environment.Element.PIT, pits);
+                // Set the objective
+                setRandom(tiles, startTile, Environment.Element.GOLD, gold);
+            } else {
+                for (int index : items.keySet()) {
+                    Tile tile = tiles[index];
+                    tile.setItem(items.get(index));
+                }
+            }
+
+            World world = new World(tiles, width, height, startPosition);
+            return world;
+        }
+
+    }
 }

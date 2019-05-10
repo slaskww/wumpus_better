@@ -18,8 +18,10 @@ public class UserControlled {
 
     public static void main(String[] args) throws InterruptedException {
         // Create a 4x4 world
-        World world = new World(4, 4);
-
+        World world = new World.WorldBuilder().size(4, 4).build();
+        Player player = new Player(world);
+        player.setTile(world.getStartPosition());
+        player.initialize();
         // Print the game title
         System.out.println("Hunt the Wumpus!");
 
@@ -45,15 +47,14 @@ public class UserControlled {
             }
         };
 
-        world.initialize();
         Runner runner = new Runner(world);
-        runner.run(agent);
+        runner.run(agent, player);
 
         // Print the board and score table
         System.out.println("Board:");
-        System.out.println(ConsoleRenderer.renderAll(world));
+        System.out.println(ConsoleRenderer.renderAll(world, player));
 
         System.out.format("Results for %s:%n", agent.getClass().getName());
-        System.out.println(ConsoleRenderer.renderScore(world));
+        System.out.println(ConsoleRenderer.renderScore(player));
     }
 }

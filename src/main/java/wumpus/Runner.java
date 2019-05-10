@@ -1,8 +1,5 @@
 package wumpus;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import wumpus.Environment.Action;
 import wumpus.Environment.Result;
 
@@ -37,12 +34,12 @@ public class Runner {
     /**
      * Execute an agent that plays the game automatically.
      * @param agent The agent instance
+     * @param player
      * @throws InterruptedException
      */
-    public void run(Agent agent) throws InterruptedException {
-        Player player = world.getPlayer();
+    public void run(Agent agent, Player player) throws InterruptedException {
 
-        while (canMove()) {
+        while (canMove(player)) {
             agent.beforeAction(player);
             Action actions = agent.getAction(player);
             player.setAction(actions);
@@ -54,10 +51,10 @@ public class Runner {
     /**
      * Check if the game has ended.
      * @return
+     * @param player
      */
-    public boolean canMove() {
-        Player player = world.getPlayer();
-        return iterations < maxIterations && world.getResult() != Result.WIN &&
+    public boolean canMove(Player player) {
+        return iterations < maxIterations && player.getResult() != Result.WIN &&
                 player.isAlive() && player.getLastAction() != Action.EXIT;
     }
 

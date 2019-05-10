@@ -1,17 +1,20 @@
 package wumpus;
 
-import java.util.ArrayList;
-
 import render.ConsoleRenderer;
 import wumpus.Environment.Action;
 import wumpus.Environment.Element;
 import wumpus.Environment.Perception;
+
+import java.util.ArrayList;
 
 /**
  * The Player represents an interactive agent of the game that will manipulate the world and modify
  * it until reaches the end.
  */
 public class Player extends Object {
+
+    private int startPosition;
+
     public enum Direction {
         N, E, S, W
     }
@@ -55,7 +58,7 @@ public class Player extends Object {
     /**
      * Resets the player state.
      */
-    protected void reset() {
+    public void initialize() {
         arrows = 3;
         gold = false;
         direction = Direction.E;
@@ -74,7 +77,9 @@ public class Player extends Object {
      * Set the current tile of the agent, un-setting the last one and recalculating all perceptions
      * sensed from the new tile.
      */
-    protected void setTile(int index) {
+    public void setTile(int index) {
+
+        this.startPosition = index;
         // Remove the Hunter from the
         if (tile != null) {
             tile.remove(Element.HUNTER);
@@ -336,7 +341,7 @@ public class Player extends Object {
      * @return The board representation
      */
     public String render() {
-        return ConsoleRenderer.render(world);
+        return ConsoleRenderer.render(world, this);
     }
 
     /**
@@ -354,5 +359,18 @@ public class Player extends Object {
         output.append("Perceptions: ").append(perceptions.toString());
 
         return output.toString();
+    }
+
+    /**
+     * Returns if the player have win, loose or still playing the game.
+     * @return The outcome of the game
+     */
+    public Environment.Result getResult() {
+        if (this.isAlive() && this.hasGold() && this.getTile().getIndex() == startPosition) {
+            return Environment.Result.WIN;
+        } else if (this.isDead()) {
+            return Environment.Result.LOOSE;
+        }
+        return Environment.Result.IN_GAME;
     }
 }

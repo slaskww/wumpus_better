@@ -28,14 +28,13 @@ public class AgentTest {
         // jakie metody powinien byc zamokowane do tego testu w obiekcie Player?
 
         worldMock = Mockito.mock(World.class);
-        when(worldMock.getPlayer()).thenReturn(playerMock);
         // jakie jeszcze metoda przydza nam sie w worldMock?
     }
 
     @Test
     public void testNumberOfMethodCalls() throws InterruptedException {
         Runner runner = new Runner(worldMock, maximumSteps);
-        runner.run(agentMock);
+        runner.run(agentMock, playerMock);
 
         Mockito.verify(agentMock, times(maximumSteps)).getAction(any());
     }

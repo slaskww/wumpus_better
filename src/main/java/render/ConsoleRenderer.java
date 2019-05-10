@@ -1,6 +1,7 @@
 package render;
 
 import wumpus.Environment;
+import wumpus.Player;
 import wumpus.Tile;
 import wumpus.World;
 
@@ -24,7 +25,7 @@ public class ConsoleRenderer {
      *
      * @return The board representation
      */
-    public static String render(World world) {
+    public static String render(World world, Player player) {
         StringBuilder render = new StringBuilder();
 
         for(int y = 0; y < world.getHeight(); y++) {
@@ -39,7 +40,7 @@ public class ConsoleRenderer {
                             Tile tile = world.getPosition(x, y);
                             String line = " 1 |";
                             if (tile.contains(Environment.Element.HUNTER)) {
-                                line = line.replace("1", Environment.getIcon(world.getPlayer()));
+                                line = line.replace("1", Environment.getIcon(player));
                             }
                             // Erase any non-replaced items
                             line = line.replace("1", " ");
@@ -71,7 +72,7 @@ public class ConsoleRenderer {
      *
      * @return The board representation
      */
-    public static String renderAll(World world) {
+    public static String renderAll(World world, Player player) {
         StringBuilder render = new StringBuilder();
 
         for(int y = 0; y < world.getHeight(); y++) {
@@ -98,7 +99,7 @@ public class ConsoleRenderer {
                                 }
                             } else {
                                 if (tile.contains(Environment.Element.HUNTER)) {
-                                    line = line.replace("1", Environment.getIcon(world.getPlayer()));
+                                    line = line.replace("1", Environment.getIcon(player));
                                 }
                                 if (tile.contains(Environment.Element.GOLD)) {
                                     line = line.replace("2",
@@ -140,14 +141,14 @@ public class ConsoleRenderer {
      * Renders the score table as a ASCII string.
      * @return The score table
      */
-    public static String renderScore(World world) {
+    public static String renderScore(Player player) {
         String scoreTable = String.format(
                 "+----------------------------+%n" +
                         "| Outcome | Score    | Steps |%n" +
                         "| ------- | -------- | ----- |%n" +
                         "| %-7s | %8d | %5d |%n" +
                         "+----------------------------+%n",
-                world.getResult().toString(), world.getPlayer().getScore(), world.getPlayer().getActions().size()
+                player.toString(), player.getScore(), player.getActions().size()
         );
 
         return scoreTable;
