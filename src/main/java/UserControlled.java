@@ -45,7 +45,7 @@ public class UserControlled {
             }
         };
 
-        world.reset();
+        world.initialize();
         Runner runner = new Runner(world);
         runner.run(agent);
 

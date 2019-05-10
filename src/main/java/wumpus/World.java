@@ -218,7 +218,7 @@ public class World {
      * Resets the board.
      * @throws InterruptedException
      */
-    public void reset() throws InterruptedException {
+    public void initialize() throws InterruptedException {
         // Reset all blocks
         for (int i = 0; i < tiles.length; i++) {
             tiles[i].clear();

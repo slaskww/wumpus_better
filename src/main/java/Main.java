@@ -18,7 +18,7 @@ public class Main {
 
             // Start and run the AI agent
             Agent agent = new HeuristicAgent(world.getWidth(), world.getHeight());
-            world.reset();
+            world.initialize();
             Runner runner = new Runner(world);
             runner.run(agent);
 
