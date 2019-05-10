@@ -1,7 +1,6 @@
 package wumpus;
 
 import wumpus.Environment.Element;
-import wumpus.Environment.Perception;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -100,19 +99,18 @@ public class World {
 
     /**
      * Sets the element at given coordinates and saves it for later retrieval.
+     *
      * @param element The element to plate
-     * @param x The horizontal position
-     * @param y The vertical position
+     * @param x       The horizontal position
+     * @param y       The vertical position
      */
     private void setItem(Element element, int x, int y) {
-        Tile tile = getPosition(x, y);
-        if (tile.isEmpty()) {
-            tile.setItem(element);
-        } else {
+        int idx = getIndex(x, y); //get index of position in array
+        if (items.containsKey(idx)) { //check if it not used already
             throw new InternalError("Tile is not empty!");
         }
         // Saves the items position for later retrieval
-        items.put(tile.getIndex(), element);
+        items.put(idx, element);
         // Turn off randomization
         randomize = false;
     }
