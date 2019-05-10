@@ -1,4 +1,5 @@
 import agents.HeuristicAgent;
+import render.ConsoleRenderer;
 import wumpus.Agent;
 import wumpus.Runner;
 import wumpus.World;
@@ -17,16 +18,16 @@ public class Main {
 
             // Start and run the AI agent
             Agent agent = new HeuristicAgent(world.getWidth(), world.getHeight());
-            world.reset();
+            world.initialize();
             Runner runner = new Runner(world);
             runner.run(agent);
 
             // Print the board and score table
             System.out.println("Board:");
-            System.out.println(world.renderAll());
+            System.out.println(ConsoleRenderer.renderAll(world));
 
             System.out.format("Results for %s:%n", agent.getClass().getName());
-            System.out.println(world.renderScore());
+            System.out.println(ConsoleRenderer.renderScore(world));
         } catch (Exception error) {
             error.printStackTrace();
         }

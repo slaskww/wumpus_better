@@ -74,7 +74,7 @@ public class Trial {
             for (int i = 0; i < TRIALS; i++) {
                 // Execute the agent
                 executionTime = System.currentTimeMillis();
-                world.reset();
+                world.initialize();
                 Runner runner = new Runner(world);
                 runner.run(agentProvider.createAgent());
 

@@ -1,7 +1,6 @@
 package wumpus;
 
 import wumpus.Environment.Element;
-import wumpus.Environment.Perception;
 
 import java.util.HashMap;
 import java.util.Random;
@@ -100,19 +99,18 @@ public class World {
 
     /**
      * Sets the element at given coordinates and saves it for later retrieval.
+     *
      * @param element The element to plate
-     * @param x The horizontal position
-     * @param y The vertical position
+     * @param x       The horizontal position
+     * @param y       The vertical position
      */
     private void setItem(Element element, int x, int y) {
-        Tile tile = getPosition(x, y);
-        if (tile.isEmpty()) {
-            tile.setItem(element);
-        } else {
+        int idx = getIndex(x, y); //get index of position in array
+        if (items.containsKey(idx)) { //check if it not used already
             throw new InternalError("Tile is not empty!");
         }
         // Saves the items position for later retrieval
-        items.put(tile.getIndex(), element);
+        items.put(idx, element);
         // Turn off randomization
         randomize = false;
     }
@@ -218,7 +216,7 @@ public class World {
      * Resets the board.
      * @throws InterruptedException
      */
-    public void reset() throws InterruptedException {
+    public void initialize() throws InterruptedException {
         // Reset all blocks
         for (int i = 0; i < tiles.length; i++) {
             tiles[i].clear();
@@ -240,143 +238,4 @@ public class World {
         }
     }
 
-    /**
-     * Renders a simplified version of the game board as an ASCII string.
-     * Each block is has only the hunter:
-     * <pre>
-     *     +---+
-     *     | H |
-     *     +---+
-     * </pre>
-     *
-     * @return The board representation
-     */
-    public String render() {
-        StringBuilder render = new StringBuilder();
-
-        for(int y = 0; y < height; y++) {
-            for(int z = 0; z < 2; z++) {
-                for (int x = 0; x < width; x++) {
-                    switch (z) {
-                        case 0:
-                            if (x == 0) render.append("+");
-                            render.append("---+");
-                            break;
-                        default:
-                            Tile tile = getPosition(x, y);
-                            String line = " 1 |";
-                            if (tile.contains(Element.HUNTER)) {
-                                line = line.replace("1", Environment.getIcon(player));
-                            }
-                            // Erase any non-replaced items
-                            line = line.replace("1", " ");
-                            // Draw
-                            if (x == 0) render.append("|");
-                            render.append(line);
-                    }
-                }
-                render.append("\n");
-            }
-        }
-        for (int i = 0; i < width; i++) {
-            if (i == 0) render.append("+");
-            render.append("---+");
-        }
-        return render.toString();
-    }
-
-    /**
-     * Renders the full game board as an ASCII string.
-     * Each block is composed by:
-     * <pre>
-     *     +-----+
-     *     |   D |
-     *     | H P |
-     *     +-----+
-     *     D = Danger, P = Perception, H = Hunter
-     * </pre>
-     *
-     * @return The board representation
-     */
-    public String renderAll() {
-        StringBuilder render = new StringBuilder();
-
-        for(int y = 0; y < height; y++) {
-            for(int z = 0; z < 3; z++) {
-                for (int x = 0; x < width; x++) {
-                    switch (z) {
-                        case 0:
-                            if (x == 0) render.append("+");
-                            render.append("-----+");
-                            break;
-                        default:
-                            Tile tile = getPosition(x, y);
-                            String line = " 1 2 |";
-                            if (z == 1) {
-                                // Renders the second line
-                                if (tile.contains(Environment.Element.WUMPUS)) {
-                                    line = line.replace("2", Environment.getIcon(Environment.Element.WUMPUS));
-                                }
-                                if (tile.contains(Environment.Element.PIT)) {
-                                    line = line.replace("2", Environment.getIcon(Element.PIT));
-                                }
-                                if (tile.contains(Environment.Element.GOLD)) {
-                                    line = line.replace("2", Environment.getIcon(Element.GOLD));
-                                }
-                            } else {
-                                if (tile.contains(Environment.Element.HUNTER)) {
-                                    line = line.replace("1", Environment.getIcon(player));
-                                }
-                                if (tile.contains(Environment.Element.GOLD)) {
-                                    line = line.replace("2",
-                                            Environment.getIcon(Perception.GLITTER));
-                                }
-                                // Mark this tile if some of their neighbor has some danger
-                                int[] neighbors = tile.getNeighbors();
-                                for (int s = 0; s < neighbors.length; s++) {
-                                    if (neighbors[s] == -1) continue;
-                                    Tile neighbor = getPosition(neighbors[s]);
-                                    if (neighbor.contains(Element.WUMPUS)) {
-                                        line = line.replace("2",
-                                                Environment.getIcon(Perception.STENCH));
-                                    }
-                                    if (neighbor.contains(Environment.Element.PIT)) {
-                                        line = line.replace("2",
-                                                Environment.getIcon(Perception.BREEZE));
-                                    }
-                                }
-                            }
-                            // Erase any non-replaced items
-                            line = line.replace("1", " ").replace("2", " ");
-                            // Draw
-                            if (x == 0) render.append("|");
-                            render.append(line);
-                    }
-                }
-                render.append("\n");
-            }
-        }
-        for (int i = 0; i < width; i++) {
-            if (i == 0) render.append("+");
-            render.append("-----+");
-        }
-        return render.toString();
-    }
-
-    /**
-     * Renders the score table as a ASCII string.
-     * @return The score table
-     */
-    public String renderScore() {
-        String scoreTable = String.format(
-                "+----------------------------+%n" +
-                "| Outcome | Score    | Steps |%n" +
-                "| ------- | -------- | ----- |%n" +
-                "| %-7s | %8d | %5d |%n" +
-                "+----------------------------+%n",
-                getResult().toString(), player.getScore(), player.getActions().size()
-            );
-
-        return scoreTable;
-    }
 }
