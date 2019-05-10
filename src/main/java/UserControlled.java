@@ -1,6 +1,7 @@
 import agents.HeuristicAgent;
 import controls.CommandParser;
 import controls.ConsoleCommandParser;
+import render.ConsoleRenderer;
 import wumpus.*;
 
 import java.io.BufferedReader;
@@ -50,9 +51,9 @@ public class UserControlled {
 
         // Print the board and score table
         System.out.println("Board:");
-        System.out.println(world.renderAll());
+        System.out.println(ConsoleRenderer.renderAll(world));
 
         System.out.format("Results for %s:%n", agent.getClass().getName());
-        System.out.println(world.renderScore());
+        System.out.println(ConsoleRenderer.renderScore(world));
     }
 }

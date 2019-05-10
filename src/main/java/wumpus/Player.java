@@ -2,6 +2,7 @@ package wumpus;
 
 import java.util.ArrayList;
 
+import render.ConsoleRenderer;
 import wumpus.Environment.Action;
 import wumpus.Environment.Element;
 import wumpus.Environment.Perception;
@@ -335,7 +336,7 @@ public class Player extends Object {
      * @return The board representation
      */
     public String render() {
-        return world.render();
+        return ConsoleRenderer.render(world);
     }
 
     /**
