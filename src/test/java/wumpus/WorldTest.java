@@ -3,7 +3,9 @@ package wumpus;
 import org.junit.jupiter.api.Test;
 import render.ConsoleRenderer;
 
+import java.sql.Array;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -151,37 +153,58 @@ public class WorldTest {
 
         System.out.println(ConsoleRenderer.renderAll(worldStub));
 
-        Runner runner = new Runner(worldStub);
+        Runner runner = new Runner(worldStub, 2);
 
 
         List<Environment.Action> actions = Arrays.asList(GO_FORWARD, GO_FORWARD);
-        Iterator<Environment.Action> actionIterator = actions.iterator();
 
-        Agent agent = new Agent() {
-            @Override
-            public Environment.Action getAction(Player player) {
-
-                return actionIterator.next();
-            }
-
-            @Override
-            public void beforeAction(Player player) {
-                //noop
-            }
-
-            @Override
-            public void afterAction(Player player) {
-                System.out.println("----------------------");
-                System.out.println(ConsoleRenderer.renderAll(worldStub));
-            }
-        };
+        Agent agent = new TestAgent(actions);
 
         runner.run(agent);
 
-      //  assertThat(worldStub.getResult()).isEqualTo(Environment.Result.IN_GAME);
-      //  assertThat(worldStub.getPlayer().isAlive()).isEqualTo(true);
-        assertThat(worldStub.getPlayer().getPerceptions().get(2)).isEqualTo(true);
+        Player player = worldStub.getPlayer();
+        List<Environment.Perception> perceptions = player.getPerceptions();
+
+        for (Environment.Perception perc :perceptions){
+            System.out.println("percepcja: " + perc.toString());
+        }
+
+
+       // assertThat(worldStub.getResult()).isEqualTo(Environment.Result.LOOSE);
+       // assertThat(worldStub.getPlayer().isAlive()).isEqualTo(false);
+        assertThat(perceptions.get(0)).isEqualTo(Environment.Perception.STENCH);
     }
 
+    @Test
+    public void testFeelBreezePath() throws InterruptedException {
+
+        World worldStub = new World(4, 4);
+
+        worldStub.setPit(3,3);
+        worldStub.initialize();
+
+        System.out.println(ConsoleRenderer.renderAll(worldStub));
+
+        Runner runner = new Runner(worldStub, 2);
+
+
+        List<Environment.Action> actions = Arrays.asList(GO_FORWARD, GO_FORWARD);
+
+        Agent agent = new TestAgent(actions);
+
+        runner.run(agent);
+
+        Player player = worldStub.getPlayer();
+        List<Environment.Perception> perceptions = player.getPerceptions();
+
+        for (Environment.Perception perc :perceptions){
+            System.out.println("percepcja: " + perc.toString());
+        }
+
+
+        // assertThat(worldStub.getResult()).isEqualTo(Environment.Result.LOOSE);
+        // assertThat(worldStub.getPlayer().isAlive()).isEqualTo(false);
+        assertThat(perceptions.get(0)).isEqualTo(Environment.Perception.BREEZE);
+    }
 
 }
