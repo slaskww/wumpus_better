@@ -44,7 +44,7 @@ public class Runner {
 
         while (canMove()) {
             agent.beforeAction(player);
-            Action actions = agent.getAction(player);
+            Action actions = agent.getAction(player); //testujemy tę linijkę
             player.setAction(actions);
             agent.afterAction(player);
             iterations++;

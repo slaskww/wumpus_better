@@ -26,10 +26,14 @@ public class AgentTest {
 
         playerMock = Mockito.mock(Player.class);
         // jakie metody powinien byc zamokowane do tego testu w obiekcie Player?
+        when(playerMock.isAlive()).thenReturn(true);
+        when(playerMock.getLastAction()).thenReturn(Environment.Action.GO_FORWARD);
 
         worldMock = Mockito.mock(World.class);
         when(worldMock.getPlayer()).thenReturn(playerMock);
         // jakie jeszcze metoda przydza nam sie w worldMock?
+        when(worldMock.getPlayer()).thenReturn(playerMock);
+        when(worldMock.getResult()).thenReturn(Environment.Result.IN_GAME);
     }
 
     @Test

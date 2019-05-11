@@ -13,7 +13,7 @@ public class ConsoleCommandParser implements CommandParser<String> {
 
     private Map<String, Environment.Action> actionMap = new HashMap<String, Environment.Action>();
 
-    public static final ConsoleCommandParser INSTANCE = new ConsoleCommandParser();
+    public static final ConsoleCommandParser INSTANCE = new ConsoleCommandParser(); //singleton
 
     private ConsoleCommandParser() {
         add("f", Environment.Action.GO_FORWARD);

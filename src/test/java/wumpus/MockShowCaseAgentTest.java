@@ -23,6 +23,7 @@ public class MockShowCaseAgentTest {
     // metoda getAction zawsze bedzie zwracać to samo
     @Test
     public void showCase(){
+
         System.out.println(agentMock.getAction(null));
     }
 
